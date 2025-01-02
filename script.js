@@ -67,6 +67,9 @@ document.getElementById('gerar-planilha').addEventListener('click', function() {
     }
 
     gerarExcel(corridas);
+    
+    
+    window.location.href = 'tela-obrigado/obrigado.html';
 });
 
 function gerarExcel(dados) {
@@ -74,8 +77,10 @@ function gerarExcel(dados) {
     const ws = XLSX.utils.json_to_sheet(dados);
     XLSX.utils.book_append_sheet(wb, ws, "Corridas");
 
+    
     XLSX.writeFile(wb, "corridas_taxista.xlsx");
 }
+
 
 function excluirCorrida(linha) {
     if (confirm("Tem certeza que deseja excluir esta corrida?")) {
