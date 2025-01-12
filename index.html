@@ -34,21 +34,37 @@
             </div>
 
             <div class="input-group">
+                <label for="horario">Horário:</label>
+                <select id="horario" required>
+                    <option value="">Selecione o horário</option>
+                    <option value="11h">11h</option>
+                    <option value="12h">12h</option>
+                    <option value="13h">13h</option>
+                    <option value="14h">14h</option>
+                    <option value="15h">15h</option>
+                    <option value="16h">16h</option>
+                    <option value="17h">17h</option>
+                </select>
+            </div>
+
+            <div class="input-group">
                 <label for="funcionarios">Funcionários:</label>
                 <input type="text" id="funcionarios" required>
             </div>
 
-            <button type="submit">Adicionar Corrida</button>
+            <button type="submit">Adicionar Registro</button>
+            <button type="button" id="adicionar-contagem" class="btn-contagem">Adicionar Contagem (R$30)</button>
         </form>
 
         <div class="summary">
-            <h2>Corridas Registradas</h2>
+            <h2>Registros</h2>
             <table id="tabela-corridas">
                 <thead>
                     <tr>
                         <th>Motorista</th>
                         <th>Bairro</th>
                         <th>Funcionários</th>
+                        <th>Horário</th>
                         <th>Preço (R$)</th>
                         <th>Ações</th>
                     </tr>

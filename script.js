@@ -1,89 +1,78 @@
-document.getElementById('form-corrida').addEventListener('submit', function(event) {
-    event.preventDefault();
+document.addEventListener('DOMContentLoaded', function () {
+    let valorAdicional = 0; // Variável para armazenar o valor fixo de 30 reais (adicional)
 
-    const motorista = document.getElementById('motorista').value;
-    const bairro = document.getElementById('bairro').value;
-    const funcionarios = document.getElementById('funcionarios').value;
+    // Função para adicionar registro
+    document.getElementById('form-corrida').addEventListener('submit', function (event) {
+        event.preventDefault();
 
-    if (!motorista || !bairro || !funcionarios) {
-        alert("Por favor, preencha todos os campos!");
-        return;
-    }
+        const motorista = document.getElementById('motorista').value;
+        const bairro = document.getElementById('bairro').value;
+        const funcionarios = document.getElementById('funcionarios').value;
+        const horario = document.getElementById('horario').value;
 
-    const preco = calcularPreco(bairro);
+        if (!motorista || !bairro || !funcionarios || !horario) {
+            alert("Por favor, preencha todos os campos!");
+            return;
+        }
 
-    const tabela = document.getElementById('tabela-corridas').getElementsByTagName('tbody')[0];
-    const novaLinha = tabela.insertRow();
+        // Calcula o preço com o valor adicional (se houver)
+        const precoBairro = calcularPreco(bairro);
+        const precoFinal = precoBairro + valorAdicional;
 
-    novaLinha.insertCell(0).textContent = motorista;
-    novaLinha.insertCell(1).textContent = bairro;
-    novaLinha.insertCell(2).textContent = funcionarios;
-    novaLinha.insertCell(3).textContent = preco.toFixed(2);
+        const tabela = document.getElementById('tabela-corridas').getElementsByTagName('tbody')[0];
+        const novaLinha = tabela.insertRow();
 
-    const acoesCell = novaLinha.insertCell(4);
-    const excluirBtn = document.createElement('button');
-    excluirBtn.textContent = 'Excluir';
-    excluirBtn.classList.add('excluir-btn');
-    excluirBtn.onclick = () => excluirCorrida(novaLinha);
-    acoesCell.appendChild(excluirBtn);
+        novaLinha.insertCell(0).textContent = motorista;
+        novaLinha.insertCell(1).textContent = bairro;
+        novaLinha.insertCell(2).textContent = funcionarios;
+        novaLinha.insertCell(3).textContent = horario;
+        novaLinha.insertCell(4).textContent = precoFinal.toFixed(2);
 
-    document.getElementById('form-corrida').reset();
-});
+        const acoesCell = novaLinha.insertCell(5);
+        const excluirBtn = document.createElement('button');
+        excluirBtn.textContent = 'Excluir';
+        excluirBtn.classList.add('excluir-btn');
+        excluirBtn.onclick = () => excluirCorrida(novaLinha);
+        acoesCell.appendChild(excluirBtn);
 
-function calcularPreco(bairro) {
-    const precos = {
-        'Auto do Mateus': 70,
-        'Bairro das Indústrias': 80,
-        'Cristo': 60,
-        'Funcionários': 50,
-        'Geisel': 50,
-        'João Paulo': 50,
-        'Mangabeira': 40,
-        'Praia do Sol': 50,
-        'Valentina': 40,
-        'Santa Rita': 100
-    };
-    return precos[bairro] || 0;
-}
+        document.getElementById('form-corrida').reset();
+        valorAdicional = 0; // Resetar o valor fixo após adicionar o registro
+    });
 
-document.getElementById('gerar-planilha').addEventListener('click', function() {
-    const tabela = document.getElementById('tabela-corridas');
-    const corridas = [];
-
-    for (let i = 1; i < tabela.rows.length; i++) {
-        const row = tabela.rows[i];
-        const corrida = {
-            Motorista: row.cells[0].textContent,
-            Bairro: row.cells[1].textContent,
-            Funcionários: row.cells[2].textContent,
-            Preço: row.cells[3].textContent
+    // Função para calcular preço baseado no bairro
+    function calcularPreco(bairro) {
+        const precos = {
+            'Auto do Mateus': 70,
+            'Bairro das Indústrias': 80,
+            'Cristo': 60,
+            'Funcionários': 50,
+            'Geisel': 50,
+            'João Paulo': 50,
+            'Mangabeira': 40,
+            'Praia do Sol': 50,
+            'Valentina': 40,
+            'Santa Rita': 100
         };
-        corridas.push(corrida);
+        return precos[bairro] || 0;
     }
 
-    if (corridas.length === 0) {
-        alert("Nenhuma corrida registrada!");
-        return;
+    // Função para excluir registro
+    function excluirCorrida(linha) {
+        if (confirm("Tem certeza que deseja excluir este registro?")) {
+            linha.remove();
+        }
     }
 
-    gerarExcel(corridas);
-    
-    
-    window.location.href = 'tela-obrigado/obrigado.html';
+    // Adiciona valor fixo de 30 reais ao valor do bairro
+    document.getElementById('adicionar-contagem').addEventListener('click', function () {
+        valorAdicional = 30;
+        alert("Valor fixo de R$30 adicionado à contagem de carros.");
+    });
+
+    // Função para gerar planilha
+    document.getElementById('gerar-planilha').addEventListener('click', function () {
+        const tabela = document.getElementById('tabela-corridas');
+        const workbook = XLSX.utils.table_to_book(tabela, { sheet: "Registros" });
+        XLSX.writeFile(workbook, "registros.xlsx");
+    });
 });
-
-function gerarExcel(dados) {
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(dados);
-    XLSX.utils.book_append_sheet(wb, ws, "Corridas");
-
-    
-    XLSX.writeFile(wb, "corridas_taxista.xlsx");
-}
-
-
-function excluirCorrida(linha) {
-    if (confirm("Tem certeza que deseja excluir esta corrida?")) {
-        linha.remove();
-    }
-}
