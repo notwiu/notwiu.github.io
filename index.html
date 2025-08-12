@@ -1,78 +1,581 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro Top Taxi</title>
-    <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Top Táxi - Sistema (Pronto) — Reset com Modal (ajustado)</title>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- SheetJS (XLSX) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --primary:#2563EB; --primary-dark:#1E40AF; --secondary:#10B981;
+  --danger:#EF4444; --bg:#F1F5F9; --card:#fff; --muted:#64748B;
+  --glass: rgba(255,255,255,0.7);
+}
+*{box-sizing:border-box;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial; margin:0}
+body{background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialiased}
+.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+.sidebar{background:linear-gradient(180deg,#fff,#fbfdff);padding:20px;border-right:1px solid #ecf2fb;display:flex;flex-direction:column;gap:12px}
+.logo{display:flex;gap:12px;align-items:center;margin-bottom:4px}
+.logo img{width:44px;height:44px;object-fit:contain}
+.logo h2{color:var(--primary);font-size:1.05rem;letter-spacing:0.6px}
+.nav{list-style:none;padding:0;margin-top:6px;display:flex;flex-direction:column;gap:6px}
+.nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;color:var(--muted);text-decoration:none;transition:all .15s}
+.nav a:hover{background:#f3f7ff;transform:translateX(6px)}
+.nav a.active{background:var(--primary);color:#fff;box-shadow:0 10px 30px rgba(37,99,235,0.12)}
+.footer-side{margin-top:auto;display:flex;flex-direction:column;gap:8px}
+.btn-ghost{background:transparent;border:1px solid #eef2f7;padding:10px 12px;border-radius:8px;cursor:pointer}
+.small { font-size:0.85rem; color:var(--muted) }
+
+/* Main */
+.main{padding:22px}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.title{font-size:1.25rem;font-weight:700}
+.user{display:flex;gap:12px;align-items:center}
+.user .avatar{background:var(--primary);color:#fff;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800}
+
+/* Cards grid */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px}
+.card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 10px 30px rgba(16,24,40,0.06)}
+.card .title{color:var(--primary);font-weight:700;margin-bottom:8px}
+.summary-value{font-size:1.4rem;font-weight:800}
+.summary-label{color:var(--muted);font-weight:700}
+
+/* Tables */
+.table-container{overflow:auto;border-radius:10px;border:1px solid #e6eef8;margin-top:12px}
+table{width:100%;border-collapse:collapse;min-width:720px}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid #f1f5f9}
+th{background:var(--primary);color:#fff;position:sticky;top:0}
+.badge{padding:6px 8px;border-radius:999px;font-weight:700;font-size:0.82rem}
+.badge-success{background:#D1FAE5;color:#065F46}
+.badge-pend{background:#FEF3C7;color:#92400E}
+
+/* Registrar (seu design) */
+.reg-container{background:#fff;border-radius:12px;padding:18px;max-width:980px;box-shadow:0 12px 30px rgba(16,24,40,0.06)}
+.reg-container h1{font-size:1.15rem;margin-bottom:12px}
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:12px}
+.input-group{display:flex;flex-direction:column}
+.input-group label{font-weight:700;margin-bottom:6px}
+.input-group input,.input-group select{padding:10px;border-radius:8px;border:1px solid #e9f0fb;font-size:0.95rem;background:#fff}
+.controls{display:flex;gap:10px;margin-top:8px}
+.btn{padding:10px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-sec{background:var(--secondary);color:#fff}
+.btn-export{background:#0ea5a4;color:#fff}
+.action-btn{padding:6px 8px;border-radius:8px;border:none;cursor:pointer;background:transparent;color:var(--muted)}
+
+/* Reset modal styling (estilizado) */
+.modal-reset{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(2,6,23,0.45), rgba(2,6,23,0.35));z-index:60;opacity:0;pointer-events:none;transition:all .2s;}
+.modal-reset.show{opacity:1;pointer-events:auto}
+.modal-card{
+  width:min(620px,96%); background:linear-gradient(180deg,#fff,#fbfdff); border-radius:14px; padding:18px; box-shadow:0 20px 50px rgba(2,6,23,0.35);
+  transform:translateY(8px); transition:all .18s;
+}
+.modal-header{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.modal-header .icon{background:linear-gradient(180deg,var(--primary),var(--primary-dark));color:#fff;width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.modal-title{font-weight:800;font-size:1.05rem}
+.modal-body{display:grid;gap:12px}
+.option{display:flex;align-items:flex-start;gap:12px;padding:12px;border-radius:10px;border:1px solid #eef5ff;background:linear-gradient(180deg,#fff,#fcfdff)}
+.option input[type="radio"]{margin-top:6px}
+.checkbox{display:flex;align-items:center;gap:8px}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:12px}
+.hint{font-size:0.88rem;color:var(--muted)}
+
+/* small foot */
+.reset-info{font-size:0.82rem;color:var(--muted);text-align:center;padding-top:8px}
+
+/* responsive */
+@media(max-width:980px){.grid-3{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:720px){.app{grid-template-columns:1fr}.nav{display:flex;flex-direction:row;gap:6px;overflow:auto}.grid-3{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>Registro Top Taxi</h1>
-        
-        <form id="form-corrida">
-            <div class="input-group">
-                <label for="motorista">Motorista:</label>
-                <input type="text" id="motorista" required>
-            </div>
 
-            <div class="input-group">
-                <label for="bairro">Bairro:</label>
-                <select id="bairro" required>
-                    <option value="">Selecione o bairro</option>
-                    <option value="Auto do Mateus">Auto do Mateus</option>
-                    <option value="Bairro das Indústrias">Bairro das Indústrias</option>
-                    <option value="Cristo">Cristo</option>
-                    <option value="Funcionários">Funcionários</option>
-                    <option value="Geisel">Geisel</option>
-                    <option value="João Paulo">João Paulo</option>
-                    <option value="Mangabeira">Mangabeira</option>
-                    <option value="Praia do Sol">Praia do Sol</option>
-                    <option value="Valentina">Valentina</option>
-                    <option value="Santa Rita">Santa Rita</option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <label for="horario">Horário:</label>
-                <select id="horario" required>
-                    <option value="">Selecione o horário</option>
-                    <option value="11h">11h</option>
-                    <option value="17h">17h</option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <label for="funcionarios">Funcionários:</label>
-                <input type="text" id="funcionarios" required>
-            </div>
-
-            <button type="submit">Adicionar Registro</button>
-            <button type="button" id="adicionar-contagem" class="btn-contagem">Adicionar Contagem (R$30)</button>
-        </form>
-
-        <div class="summary">
-            <h2>Registros</h2>
-            <table id="tabela-corridas">
-                <thead>
-                    <tr>
-                        <th>Motorista</th>
-                        <th>Bairro</th>
-                        <th>Funcionários</th>
-                        <th>Horário</th>
-                        <th>Preço (R$)</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-
-        <button id="gerar-planilha">Gerar Planilha</button>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo">
+      <img src="assets/img/logo.png" alt="logo" onerror="this.style.display='none'"/>
+      <h2>TOP TÁXI</h2>
     </div>
 
-    <script src="script.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <nav>
+      <ul class="nav" id="menu">
+        <li><a href="#" class="nav-link active" data-page="dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a href="#" class="nav-link" data-page="registrar"><i class="fas fa-car"></i> Registrar Corrida</a></li>
+        <li><a href="#" class="nav-link" data-page="motoristas"><i class="fas fa-users"></i> Motoristas</a></li>
+        <li><a href="#" class="nav-link" data-page="rotas"><i class="fas fa-map-marked-alt"></i> Rotas</a></li>
+        <li><a href="#" class="nav-link" data-page="relatorios"><i class="fas fa-file-invoice-dollar"></i> Relatórios</a></li>
+      </ul>
+    </nav>
+
+    <div class="footer-side">
+      <div style="display:flex;gap:8px">
+        <button id="btn-logout" class="btn-ghost"><i class="fas fa-sign-out-alt"></i> Sair</button>
+      </div>
+      <div class="small reset-info">
+        Último reset: <span id="last-reset">—</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <header class="header">
+      <div>
+        <div class="title" id="page-title">Dashboard</div>
+        <div class="small" id="page-sub">Visão geral</div>
+      </div>
+      <div class="user">
+        <div style="text-align:right"><div style="font-weight:800">Você</div><div style="font-size:0.85rem;color:var(--muted)">Administrador</div></div>
+        <div class="avatar">TOP</div>
+      </div>
+    </header>
+
+    <!-- PAGES -->
+    <section id="page-dashboard" class="page">
+      <div class="grid-3">
+        <div class="card">
+          <div class="title">Corridas</div>
+          <div class="summary-value" id="dash-count">0</div>
+          <div class="summary-label">Total de Corridas</div>
+        </div>
+
+        <div class="card">
+          <div class="title">Faturamento (hoje)</div>
+          <div class="summary-value" id="dash-fatura">R$ 0,00</div>
+          <div class="summary-label">Faturamento diário</div>
+        </div>
+
+        <div class="card">
+          <div class="title">Motoristas</div>
+          <div class="summary-value" id="dash-motoristas">0</div>
+          <div class="summary-label">Cadastrados</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 380px;gap:14px;margin-bottom:12px">
+        <div class="card">
+          <div class="title">Corridas (últimos 7 dias)</div>
+          <canvas id="lineChart" height="130"></canvas>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="title">Distribuição</div>
+            <div style="display:flex;gap:8px">
+              <button id="btn-reset-dashboard" class="btn btn-ghost" title="Resetar dashboard"><i class="fas fa-trash-alt"></i> Resetar</button>
+              <button id="export-xlsx" class="btn btn-export"><i class="fas fa-file-excel"></i> Exportar</button>
+            </div>
+          </div>
+          <canvas id="pieChart" height="130"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="title">Últimas Corridas</div>
+        <div class="table-container">
+          <table id="table-dashboard">
+            <thead><tr><th>Motorista</th><th>Bairro</th><th>Funcionários</th><th>Preço</th><th>Ações</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- REGISTRAR -->
+    <section id="page-registrar" class="page" style="display:none">
+      <div class="reg-container">
+        <h1>Registro Top Taxi</h1>
+
+        <form id="form-corrida">
+          <div class="form-row">
+            <div class="input-group">
+              <label for="motorista">Motorista:</label>
+              <input type="text" id="motorista" required placeholder="Nome do motorista" />
+            </div>
+
+            <div class="input-group">
+              <label for="bairro">Bairro:</label>
+              <select id="bairro" required>
+                <option value="">Selecione o bairro</option>
+                <option value="Auto do Mateus">Auto do Mateus</option>
+                <option value="Bairro das Indústrias">Bairro das Indústrias</option>
+                <option value="Cristo">Cristo</option>
+                <option value="Funcionários">Funcionários</option>
+                <option value="Geisel">Geisel</option>
+                <option value="João Paulo">João Paulo</option>
+                <option value="Mangabeira">Mangabeira</option>
+                <option value="Praia do Sol">Praia do Sol</option>
+                <option value="Valentina">Valentina</option>
+                <option value="Santa Rita">Santa Rita</option>
+              </select>
+            </div>
+
+            <!-- HORÁRIO REMOVIDO AQUI -->
+
+            <div class="input-group">
+              <label for="funcionarios">Funcionários:</label>
+              <input type="text" id="funcionarios" placeholder="Ex: 3 passageiros" />
+            </div>
+
+            <div class="input-group">
+              <label for="valor">Preço (R$) - opcional</label>
+              <input type="number" id="valor" step="0.01" placeholder="Ex: 30.00" />
+            </div>
+          </div>
+
+          <div class="controls">
+            <button type="submit" id="btn-add" class="btn btn-primary"><i class="fas fa-save"></i> Adicionar Registro</button>
+            <button type="button" id="btn-reset-form" class="btn btn-ghost">Limpar</button>
+          </div>
+        </form>
+
+        <div style="margin-top:16px">
+          <h2>Registros</h2>
+          <div class="table-container">
+            <table id="tabela-corridas">
+              <thead>
+                <tr><th>Motorista</th><th>Bairro</th><th>Funcionários</th><th>Preço (R$)</th><th>Ações</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div style="margin-top:10px">
+            <button id="gerar-planilha" class="btn btn-export"><i class="fas fa-file-excel"></i> Gerar Planilha</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MOTORISTAS -->
+    <section id="page-motoristas" class="page" style="display:none">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="title">Motoristas</div>
+          <div><button id="btn-add-driver" class="btn btn-primary"><i class="fas fa-plus"></i> Adicionar</button></div>
+        </div>
+
+        <div class="table-container" style="margin-top:10px">
+          <table id="table-motoristas"><thead><tr><th>Nome</th><th>ID</th><th>Ações</th></tr></thead><tbody></tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-rotas" class="page" style="display:none"><div class="card"><div class="title">Rotas</div><p class="small">Em desenvolvimento — mapa aqui (opcional). <strong>Observação:</strong> não registramos horários em Rotas.</p></div></section>
+    <section id="page-relatorios" class="page" style="display:none"><div class="card"><div class="title">Relatórios</div><p class="small">Filtros e geração avançada (em breve).</p></div></section>
+
+  </main>
+</div>
+
+<!-- Reset Modal (estilizado) -->
+<div id="modal-reset" class="modal-reset" role="dialog" aria-hidden="true">
+  <div class="modal-card" role="document">
+    <div class="modal-header">
+      <div class="icon"><i class="fas fa-trash-alt"></i></div>
+      <div>
+        <div class="modal-title">Resetar Dashboard</div>
+        <div class="hint">Escolha o tipo de reset e confirme. Você pode exportar os dados antes.</div>
+      </div>
+    </div>
+
+    <div class="modal-body">
+      <div class="option">
+        <input type="radio" name="reset-scope" id="reset-corridas" value="corridas" checked>
+        <div>
+          <strong>Zerar somente as corridas</strong>
+          <div class="small">Mantém os motoristas e configurações. Use no fim do mês/semana.</div>
+        </div>
+      </div>
+
+      <div class="option">
+        <input type="radio" name="reset-scope" id="reset-tudo" value="all">
+        <div>
+          <strong>Zerar tudo</strong>
+          <div class="small">Remove corridas e motoristas — use com cautela.</div>
+        </div>
+      </div>
+
+      <label class="checkbox"><input type="checkbox" id="export-before" /> <span>Exportar dados (.xlsx) antes do reset</span></label>
+      <div class="modal-actions">
+        <button id="cancel-reset" class="btn btn-ghost">Cancelar</button>
+        <button id="confirm-reset" class="btn btn-primary"><i class="fas fa-check-circle"></i> Confirmar Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- DB (localStorage) ---------- */
+class DB {
+  constructor(){
+    this.corridas = JSON.parse(localStorage.getItem('corridas')) || [];
+    this.motoristas = JSON.parse(localStorage.getItem('motoristas')) || [
+      {id:1,nome:"João Silva"},{id:2,nome:"Maria Souza"},{id:3,nome:"Carlos Oliveira"}
+    ];
+    this._nextDriverId = this.motoristas.length ? Math.max(...this.motoristas.map(m=>m.id))+1 : 1;
+  }
+  save(){ localStorage.setItem('corridas', JSON.stringify(this.corridas)); localStorage.setItem('motoristas', JSON.stringify(this.motoristas)); }
+  addCorrida(obj){ obj.id = Date.now(); obj.data = new Date().toISOString(); this.corridas.unshift(obj); this.save(); return obj; }
+  updateCorrida(obj){ const i=this.corridas.findIndex(c=>c.id===obj.id); if(i>-1){ this.corridas[i]=obj; this.save(); return true;} return false; }
+  deleteCorrida(id){ this.corridas=this.corridas.filter(c=>c.id!==id); this.save(); }
+  addDriver(nome){ const d={id:this._nextDriverId++, nome}; this.motoristas.push(d); this.save(); return d; }
+  deleteDriver(id){ this.motoristas=this.motoristas.filter(d=>d.id!==id); this.save(); }
+  clearCorridas(){ this.corridas=[]; this.save(); }
+  clearAll(){ this.corridas=[]; this.motoristas=[]; this._nextDriverId=1; this.save(); }
+}
+const db = new DB();
+
+/* ---------- HELPERS ---------- */
+function currencyBR(n){ return 'R$ ' + Number(n||0).toFixed(2).replace('.',','); }
+function escapeHtml(s){ if(!s) return ''; return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
+function generateColors(n){ const base=['#2563EB','#10B981','#F59E0B','#EF4444','#7C3AED','#06B6D4','#F97316','#64748B']; const out=[]; for(let i=0;i<n;i++) out.push(base[i%base.length]); return out; }
+
+/* ---------- SPA NAV ---------- */
+document.querySelectorAll('.nav-link').forEach(a=>{
+  a.addEventListener('click', e=>{
+    e.preventDefault();
+    document.querySelectorAll('.nav-link').forEach(x=>x.classList.remove('active'));
+    a.classList.add('active');
+    const page = a.dataset.page;
+    document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+    document.getElementById('page-'+page).style.display = 'block';
+    document.getElementById('page-title').textContent = a.textContent.trim();
+    if(page==='dashboard') renderDashboard();
+    if(page==='registrar') renderRegistrar();
+    if(page==='motoristas') renderMotoristas();
+  });
+});
+
+/* ---------- Dashboard charts & table ---------- */
+let lineChart, pieChart;
+function renderDashboard(){
+  const corridas = db.corridas;
+  document.getElementById('dash-count').textContent = corridas.length;
+
+  // faturamento HOJE (soma apenas das corridas de hoje)
+  const hojeStart = new Date(); hojeStart.setHours(0,0,0,0);
+  const hojeEnd = new Date(); hojeEnd.setHours(23,59,59,999);
+  const faturamentoHoje = corridas.reduce((s,c)=>{
+    const d = c.data ? new Date(c.data) : null;
+    return s + ((d && d >= hojeStart && d <= hojeEnd) ? Number(c.valor||0) : 0);
+  },0);
+  document.getElementById('dash-fatura').textContent = currencyBR(faturamentoHoje);
+
+  document.getElementById('dash-motoristas').textContent = db.motoristas.length;
+
+  // tabela últimas 10
+  const tbody = document.querySelector('#table-dashboard tbody'); tbody.innerHTML='';
+  corridas.slice(0,10).forEach(c=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${escapeHtml(c.motorista||'')}</td>
+      <td>${escapeHtml(c.bairro||'')}</td>
+      <td>${escapeHtml(c.funcionarios||'')}</td>
+      <td>${currencyBR(Number(c.valor||0))}</td>
+      <td>
+        <button class="action-btn" onclick="openEdit(${c.id})"><i class="fas fa-edit"></i></button>
+        <button class="action-btn" onclick="delConfirm(${c.id})"><i class="fas fa-trash"></i></button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+
+  // Line chart últimos 7 dias (contagem)
+  const last7=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); last7.push(d); }
+  const labels = last7.map(d=>d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}));
+  const counts = last7.map(day=>{
+    const start=new Date(day); start.setHours(0,0,0,0); const end=new Date(day); end.setHours(23,59,59,999);
+    return db.corridas.filter(c=> c.data && new Date(c.data)>=start && new Date(c.data)<=end ).length;
+  });
+
+  if(lineChart) lineChart.destroy();
+  lineChart = new Chart(document.getElementById('lineChart'), {
+    type:'line',
+    data:{labels, datasets:[{label:'Corridas', data:counts, borderColor:getComputedStyle(document.documentElement).getPropertyValue('--primary')||'#2563EB', backgroundColor:'rgba(37,99,235,0.08)', fill:true, tension:0.3}]},
+    options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true,ticks:{precision:0}}}}
+  });
+
+  // Pie por motorista
+  const drivers = db.motoristas.map(m=>({nome:m.nome,count: db.corridas.filter(c=>c.motorista===m.nome).length})).filter(x=>x.count>0);
+  if(pieChart) pieChart.destroy();
+  pieChart = new Chart(document.getElementById('pieChart'), {
+    type:'pie',
+    data:{labels:drivers.map(d=>d.nome), datasets:[{data:drivers.map(d=>d.count), backgroundColor:generateColors(drivers.length)}]},
+    options:{plugins:{legend:{position:'bottom'}}}
+  });
+
+  // update last reset info
+  document.getElementById('last-reset').textContent = localStorage.getItem('lastReset') || '—';
+}
+
+/* ---------- Registrar page (seu design) ---------- */
+function renderRegistrar(){
+  const tbody = document.querySelector('#tabela-corridas tbody'); tbody.innerHTML='';
+  db.corridas.forEach(c=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${escapeHtml(c.motorista)}</td>
+      <td>${escapeHtml(c.bairro)}</td>
+      <td>${escapeHtml(c.funcionarios)}</td>
+      <td>${Number(c.valor||0).toFixed(2).replace('.',',')}</td>
+      <td>
+        <button class="action-btn" onclick="openEdit(${c.id})"><i class="fas fa-edit"></i></button>
+        <button class="action-btn" onclick="delConfirm(${c.id})"><i class="fas fa-trash"></i></button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+/* calcular preco por bairro (fallback) */
+function calcularPreco(bairro){
+  const precos = {'Auto do Mateus':70,'Bairro das Indústrias':80,'Cristo':60,'Funcionários':50,'Geisel':50,'João Paulo':50,'Mangabeira':40,'Praia do Sol':50,'Valentina':40,'Santa Rita':100};
+  return precos[bairro] || 0;
+}
+
+/* adicionar corrida */
+document.getElementById('form-corrida').addEventListener('submit', function(e){
+  e.preventDefault();
+  const motorista = document.getElementById('motorista').value.trim();
+  const bairro = document.getElementById('bairro').value;
+  const funcionarios = document.getElementById('funcionarios').value.trim();
+  let valor = document.getElementById('valor').value;
+  if(!motorista || !bairro || !funcionarios){ alert('Preencha todos os campos'); return; }
+  if(!valor || Number(valor) <= 0) valor = calcularPreco(bairro);
+  valor = Number(valor);
+  const obj = {motorista,bairro,funcionarios,valor};
+  db.addCorrida(obj);
+  document.getElementById('form-corrida').reset();
+  renderRegistrar(); renderDashboard();
+  notify('Registro adicionado');
+});
+
+/* NOTE: lógica de contagem removida por pedido (sem botão, sem R$30) */
+
+/* gerar planilha da página registrar */
+document.getElementById('gerar-planilha').addEventListener('click', function(){
+  const ws = XLSX.utils.json_to_sheet(db.corridas.map(c=>({
+    Motorista:c.motorista,
+    Bairro:c.bairro,
+    Funcionarios:c.funcionarios,
+    Valor:c.valor,
+    Data:c.data
+  })));
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Registros');
+  XLSX.writeFile(wb, `registros_${new Date().toISOString().slice(0,10)}.xlsx`);
+});
+
+/* exportar dashboard */
+document.getElementById('export-xlsx').addEventListener('click', function(){
+  const ws = XLSX.utils.json_to_sheet(db.corridas.map(c=>({
+    Motorista:c.motorista,
+    Bairro:c.bairro,
+    Funcionarios:c.funcionarios,
+    Valor:c.valor,
+    Data:c.data
+  })));
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Corridas');
+  XLSX.writeFile(wb, `corridas_${new Date().toISOString().slice(0,10)}.xlsx`);
+});
+
+/* limpar form */
+document.getElementById('btn-reset-form').addEventListener('click', ()=>document.getElementById('form-corrida').reset());
+
+/* ---------- EDIT / DELETE ---------- */
+function delConfirm(id){
+  if(confirm('Tem certeza que deseja excluir?')){ db.deleteCorrida(id); renderRegistrar(); renderDashboard(); notify('Registro excluído'); }
+}
+const modal = document.getElementById('modal-edit'); // reuse from earlier if needed (not included here to keep modal-simple)
+function openEdit(id){
+  const c = db.corridas.find(x=>x.id===id);
+  if(!c) return alert('Registro não encontrado');
+  const motorista = prompt('Motorista:', c.motorista); if(motorista===null) return;
+  c.motorista = motorista.trim() || c.motorista;
+  const bairro = prompt('Bairro:', c.bairro); if(bairro!==null) c.bairro = bairro || c.bairro;
+  const funcionarios = prompt('Funcionários:', c.funcionarios); if(funcionarios!==null) c.funcionarios = funcionarios || c.funcionarios;
+  const valor = prompt('Valor (R$):', c.valor); if(valor!==null) c.valor = Number(valor) || c.valor;
+  db.updateCorrida(c);
+  renderRegistrar(); renderDashboard(); notify('Registro atualizado');
+}
+
+/* ---------- MOTORISTAS ---------- */
+function renderMotoristas(){ const tbody=document.querySelector('#table-motoristas tbody'); tbody.innerHTML=''; db.motoristas.forEach(m=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${escapeHtml(m.nome)}</td><td>${m.id}</td><td><button class="action-btn" onclick="editDriver(${m.id})"><i class="fas fa-pen"></i></button> <button class="action-btn" onclick="delDriverConfirm(${m.id})"><i class="fas fa-trash"></i></button></td>`; tbody.appendChild(tr); }); }
+document.getElementById('btn-add-driver').addEventListener('click', function(){ const nome=prompt('Nome do motorista:'); if(!nome) return; db.addDriver(nome.trim()); renderMotoristas(); renderDashboard(); notify('Motorista adicionado'); });
+function delDriverConfirm(id){ if(confirm('Excluir motorista? Corridas relacionadas permanecerão.')){ db.deleteDriver(id); renderMotoristas(); renderDashboard(); notify('Motorista excluído'); } }
+function editDriver(id){ const m = db.motoristas.find(x=>x.id===id); if(!m) return; const novo = prompt('Editar nome:', m.nome); if(!novo) return; m.nome=novo.trim(); db.save(); renderMotoristas(); renderDashboard(); notify('Motorista editado'); }
+
+/* ---------- RESET modal logic ---------- */
+const btnReset = document.getElementById('btn-reset-dashboard');
+const modalReset = document.getElementById('modal-reset');
+const cancelReset = document.getElementById('cancel-reset');
+const confirmReset = document.getElementById('confirm-reset');
+btnReset.addEventListener('click', ()=>{ modalReset.classList.add('show'); modalReset.setAttribute('aria-hidden','false'); });
+cancelReset.addEventListener('click', ()=>{ modalReset.classList.remove('show'); modalReset.setAttribute('aria-hidden','true'); });
+
+confirmReset.addEventListener('click', async ()=>{
+  const scope = document.querySelector('input[name="reset-scope"]:checked').value;
+  const exportBefore = document.getElementById('export-before').checked;
+  try {
+    if(exportBefore){
+      await exportBeforeReset();
+    }
+    if(scope === 'corridas'){
+      db.clearCorridas();
+      localStorage.setItem('lastReset', new Date().toLocaleString());
+    } else {
+      db.clearAll();
+      localStorage.setItem('lastReset', new Date().toLocaleString());
+    }
+    modalReset.classList.remove('show'); modalReset.setAttribute('aria-hidden','true');
+    renderRegistrar(); renderDashboard(); renderMotoristas();
+    notify('Reset concluído');
+  } catch (err){
+    alert('Erro durante reset: ' + err.message);
+  }
+});
+
+function exportBeforeReset(){
+  return new Promise((res, rej) => {
+    try {
+      const ws = XLSX.utils.json_to_sheet(db.corridas.map(c=>({
+        Motorista:c.motorista,Bairro:c.bairro,Funcionarios:c.funcionarios,Valor:c.valor,Data:c.data
+      })));
+      const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Corridas');
+      XLSX.writeFile(wb, `backup_corridas_${new Date().toISOString().slice(0,10)}.xlsx`);
+      res();
+    } catch(e){ rej(e); }
+  });
+}
+
+/* ---------- Notifications simples (toast) ---------- */
+function notify(msg){
+  // toast simples
+  const t = document.createElement('div');
+  t.textContent = msg; t.style.position='fixed'; t.style.right='18px'; t.style.bottom='18px'; t.style.background='rgba(15,23,42,0.95)'; t.style.color='#fff'; t.style.padding='10px 14px'; t.style.borderRadius='10px'; t.style.boxShadow='0 8px 30px rgba(2,6,23,0.2)'; t.style.zIndex=9999; t.style.fontWeight=700;
+  document.body.appendChild(t);
+  setTimeout(()=>{ t.style.transition='all .35s'; t.style.opacity='0'; t.style.transform='translateY(8px)'; }, 1600);
+  setTimeout(()=>t.remove(), 2000);
+}
+
+/* ---------- init ---------- */
+renderDashboard(); renderRegistrar(); renderMotoristas();
+document.getElementById('last-reset').textContent = localStorage.getItem('lastReset') || '—';
+
+/* small UX */
+document.getElementById('btn-logout').addEventListener('click', ()=>{ if(confirm('Sair do sistema?')) alert('Logout (placeholder)'); });
+document.querySelector('.logo h2').addEventListener('click', ()=>{ document.querySelector('[data-page="dashboard"]').click(); });
+
+/* small: delete via confirm in dashboard */
+window.delConfirm = delConfirm; window.openEdit = openEdit; window.editDriver = editDriver; window.delDriverConfirm = delDriverConfirm;
+</script>
 </body>
 </html>

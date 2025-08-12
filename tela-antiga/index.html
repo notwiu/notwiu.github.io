@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Top Taxi</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Registro Top Taxi</h1>
+        
+        <form id="form-corrida">
+            <div class="input-group">
+                <label for="motorista">Motorista:</label>
+                <input type="text" id="motorista" required>
+            </div>
+
+            <div class="input-group">
+                <label for="bairro">Bairro:</label>
+                <select id="bairro" required>
+                    <option value="">Selecione o bairro</option>
+                    <option value="Auto do Mateus">Auto do Mateus</option>
+                    <option value="Bairro das Indústrias">Bairro das Indústrias</option>
+                    <option value="Cristo">Cristo</option>
+                    <option value="Funcionários">Funcionários</option>
+                    <option value="Geisel">Geisel</option>
+                    <option value="João Paulo">João Paulo</option>
+                    <option value="Mangabeira">Mangabeira</option>
+                    <option value="Praia do Sol">Praia do Sol</option>
+                    <option value="Valentina">Valentina</option>
+                    <option value="Santa Rita">Santa Rita</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="horario">Horário:</label>
+                <select id="horario" required>
+                    <option value="">Selecione o horário</option>
+                    <option value="11h">11h</option>
+                    <option value="17h">17h</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="funcionarios">Funcionários:</label>
+                <input type="text" id="funcionarios" required>
+            </div>
+
+            <button type="submit">Adicionar Registro</button>
+            <button type="button" id="adicionar-contagem" class="btn-contagem">Adicionar Contagem (R$30)</button>
+        </form>
+
+        <div class="summary">
+            <h2>Registros</h2>
+            <table id="tabela-corridas">
+                <thead>
+                    <tr>
+                        <th>Motorista</th>
+                        <th>Bairro</th>
+                        <th>Funcionários</th>
+                        <th>Horário</th>
+                        <th>Preço (R$)</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+        <button id="gerar-planilha">Gerar Planilha</button>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+</body>
+</html>
