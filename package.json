@@ -1,0 +1,39 @@
+{
+  "name": "sistema-gerenciamento-taxi",
+  "version": "2.0.0",
+  "description": "Sistema profissional de gerenciamento de frota de táxi",
+  "main": "index.html",
+  "scripts": {
+    "dev": "live-server . --port=3000",
+    "build": "echo 'Build process would go here'",
+    "preview": "live-server dist --port=3001",
+    "format": "prettier --write \"src/**/*.{js,html,css}\"",
+    "lint": "eslint src/**/*.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "taxi",
+    "management",
+    "dashboard",
+    "fleet",
+    "analytics",
+    "portfolio"
+  ],
+  "author": "Seu Nome",
+  "license": "MIT",
+  "dependencies": {
+    "chart.js": "^4.4.0",
+    "xlsx": "^0.18.5",
+    "luxon": "^3.3.0"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "prettier": "^3.0.0",
+    "eslint": "^8.45.0"
+  },
+  "browserslist": [
+    "defaults",
+    "not IE 11",
+    "maintained node versions"
+  ]
+}
