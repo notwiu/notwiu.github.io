@@ -335,79 +335,80 @@ export default class UI {
                     </div>
                 </div>
                 
-                <!-- Recent Rides Table -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <i class="fas fa-history"></i>
-                            Últimas Corridas
-                        </div>
-                        <div class="card-actions">
-                            <button class="btn btn-primary btn-sm" id="view-all-corridas">
-                                <i class="fas fa-list"></i>
-                                Ver Todas
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-container">
-                            <table class="table" id="recent-rides-table">
-                                <thead>
-                                    <tr>
-                                        <th>Motorista</th>
-                                        <th>Bairro</th>
-                                        <th>Funcionários</th>
-                                        <th>Valor</th>
-                                        <th>Data</th>
-                                        <th>Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- Table rows will be populated by JavaScript -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <div class="text-muted">
-                            <small>Mostrando as 10 últimas corridas</small>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Quick Actions -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <i class="fas fa-bolt"></i>
-                            Ações Rápidas
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="row g-3">
-                            <div class="col-6 col-md-3">
-                                <button class="btn btn-outline-primary w-100 h-100 py-3" onclick="app.loadPage('registrar')">
-                                    <i class="fas fa-plus fa-2x mb-2"></i>
-                                    <div>Nova Corrida</div>
+                <div class="dashboard-bottom-grid">
+                    <!-- Recent Rides Table -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-history"></i>
+                                Últimas Corridas
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn btn-primary btn-sm" id="view-all-corridas">
+                                    <i class="fas fa-list"></i>
+                                    Ver Todas
                                 </button>
                             </div>
-                            <div class="col-6 col-md-3">
-                                <button class="btn btn-outline-success w-100 h-100 py-3" onclick="app.loadPage('motoristas')">
-                                    <i class="fas fa-user-plus fa-2x mb-2"></i>
-                                    <div>Novo Motorista</div>
-                                </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table class="table" id="recent-rides-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Motorista</th>
+                                            <th>Bairro</th>
+                                            <th>Funcionários</th>
+                                            <th>Valor</th>
+                                            <th>Data</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Table rows will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
                             </div>
-                            <div class="col-6 col-md-3">
-                                <button class="btn btn-outline-warning w-100 h-100 py-3" onclick="app.loadPage('relatorios')">
-                                    <i class="fas fa-file-export fa-2x mb-2"></i>
-                                    <div>Exportar Dados</div>
-                                </button>
+                        </div>
+                        <div class="card-footer">
+                            <div class="text-muted">
+                                <small>Mostrando as 10 últimas corridas</small>
                             </div>
-                            <div class="col-6 col-md-3">
-                                <button class="btn btn-outline-info w-100 h-100 py-3" onclick="app.loadPage('configuracoes')">
-                                    <i class="fas fa-cog fa-2x mb-2"></i>
-                                    <div>Configurações</div>
-                                </button>
+                        </div>
+                    </div>
+                    <!-- Quick Actions -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-bolt"></i>
+                                Ações Rápidas
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-6 col-md-3">
+                                    <button class="btn btn-outline-primary w-100 h-100 py-3" onclick="app.loadPage('registrar')">
+                                        <i class="fas fa-plus fa-2x mb-2"></i>
+                                        <div>Nova Corrida</div>
+                                    </button>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <button class="btn btn-outline-success w-100 h-100 py-3" onclick="app.loadPage('motoristas')">
+                                        <i class="fas fa-user-plus fa-2x mb-2"></i>
+                                        <div>Novo Motorista</div>
+                                    </button>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <button class="btn btn-outline-warning w-100 h-100 py-3" onclick="app.loadPage('relatorios')">
+                                        <i class="fas fa-file-export fa-2x mb-2"></i>
+                                        <div>Exportar Dados</div>
+                                    </button>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <button class="btn btn-outline-info w-100 h-100 py-3" onclick="app.loadPage('configuracoes')">
+                                        <i class="fas fa-cog fa-2x mb-2"></i>
+                                        <div>Configurações</div>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
